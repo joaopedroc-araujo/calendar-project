@@ -1,14 +1,16 @@
-import { useState } from 'react';
+
 import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth, addMonths, subMonths } from 'date-fns';
 import { Weekdays } from '../../utils/Weekdays/Weekdays';
 import clsx from 'clsx';
 import { EventCalendarProps, Event } from './types';
 import { useMemo } from 'react';
 import useStore, { State } from '../../zustand/store';
-import { FcNext, FcPrevious } from "react-icons/fc";
+import Header from './components/Header';
+import { useMonthContext } from '../../context/MonthContext';
 
 const EventCalendar = ({ events }: EventCalendarProps) => {
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const { currentDate } = useMonthContext();
+
     const startingDate = useStore((state: State) => state.startingDate);
     const endingDate = useStore((state: State) => state.endingDate);
 
@@ -33,17 +35,6 @@ const EventCalendar = ({ events }: EventCalendarProps) => {
         }, {});
     }, [events]);
 
-    const goToPreviousMonth = () => {
-        setCurrentDate(subMonths(currentDate, 1));
-    };
-
-    const goToNextMonth = () => {
-        setCurrentDate(addMonths(currentDate, 1));
-    };
-
-    const goToCurrentMonth = () => {
-        setCurrentDate(new Date());
-    };
 
     const handleDaysClick = (day: Date) => {
         const starting = startingDate;
@@ -57,22 +48,11 @@ const EventCalendar = ({ events }: EventCalendarProps) => {
         useStore.setState({ endingDate: day });
     };
 
+    console.log(currentDate)
+
     return (
         <div className='container mx-auto p-4 border mt-5 border-gray-800 shadow-md shadow-slate-600 rounded-md'>
-            <div className='mb-1 flex flex-row items-center justify-center p-2' >
-                <button onClick={goToPreviousMonth} className='text-2xl'>
-                    <FcPrevious />
-                </button>
-                <h1 className='text-center text-2xl px-4 font-bold'>{format(currentDate, 'MMMM yyyy')}</h1>
-                <button onClick={goToNextMonth} className='text-2xl'>
-                    <FcNext />
-                </button>
-                <button
-                    onClick={goToCurrentMonth}
-                    className='border border-gray-800 w-24 ml-7 rounded h-11'>
-                    Today
-                </button>
-            </div>
+            <Header />
             <div
                 className='grid grid-cols-7 gap-2 m-4'>
                 {Weekdays.map((day) => {
