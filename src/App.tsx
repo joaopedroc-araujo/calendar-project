@@ -1,12 +1,10 @@
-import './App.css'
-import EventCalendar from './components/EventCalendar'
+import './App.css';
+import EventCalendar from './components/EventCalendar';
 
 function App() {
 
   return (
-    <>
-      <EventCalendar />
-    </>
+    <EventCalendar />
   )
 }
 
