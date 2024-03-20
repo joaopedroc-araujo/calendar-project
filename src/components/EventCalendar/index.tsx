@@ -7,7 +7,7 @@ import useStore, { State } from '../../zustand/store';
 import Header from './components/Header';
 import { useMonthContext } from '../../context/MonthContext';
 import useHandleDaysClick from '../../utils/Functions/HandleDaysClick';
-import InputModal from './components/InputsComponent';
+import InputModal from './components/InputsModal';
 
 const EventCalendar = ({ events }: EventCalendarProps) => {
     const { currentDate } = useMonthContext();
