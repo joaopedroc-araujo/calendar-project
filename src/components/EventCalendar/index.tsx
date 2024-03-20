@@ -2,15 +2,17 @@ import { eachDayOfInterval, endOfMonth, format, getDay, isToday, startOfMonth } 
 import { Weekdays } from '../../utils/Weekdays/Weekdays';
 import clsx from 'clsx';
 import { EventCalendarProps, Event } from './types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import useStore, { State } from '../../zustand/store';
 import Header from './components/Header';
 import { useMonthContext } from '../../context/MonthContext';
 import useHandleDaysClick from '../../utils/Functions/HandleDaysClick';
+import InputModal from './components/InputsComponent';
 
 const EventCalendar = ({ events }: EventCalendarProps) => {
     const { currentDate } = useMonthContext();
     const handleDaysClick = useHandleDaysClick();
+    const [showModal, setShowModal] = useStore((state: State) => [state.showModal, state.setShowModal]);
 
     const startingDate = useStore((state: State) => state.startingDate);
     const endingDate = useStore((state: State) => state.endingDate);
@@ -26,19 +28,19 @@ const EventCalendar = ({ events }: EventCalendarProps) => {
     const startingDayIndex = getDay(firstDayOfMonth);
 
     const eventsByDay = useMemo(() => {
-        return events.reduce((acc: { [key: string]: Event[] }, event) => {
+        return events.reduce((acc: { [key: string]: Event }, event) => {
             const startDate = new Date(event['starting-date']);
             const endDate = new Date(event['ending-date']);
 
             endDate.setDate(endDate.getDate() + 1);
+
             const datesInRange = eachDayOfInterval({ start: startDate, end: endDate });
 
             datesInRange.forEach(date => {
                 const dateKey = format(date, 'yyyy-MM-dd');
                 if (!acc[dateKey]) {
-                    acc[dateKey] = [];
+                    acc[dateKey] = event;
                 }
-                acc[dateKey].push(event);
             });
 
             return acc;
@@ -73,7 +75,10 @@ const EventCalendar = ({ events }: EventCalendarProps) => {
 
                 {daysInMonth.map((day, index) => {
                     const dateKey = format(day, 'yyyy-MM-dd');
-                    const todayEvents = eventsByDay[dateKey] || [];
+                    const todayEvent = eventsByDay[dateKey];
+                    const isCurrentDayClicked = startingDate && format(startingDate, 'yyyy-MM-dd') === dateKey;
+                    const isTodayClicked = isToday(day) && isCurrentDayClicked;
+                    const isWithinRange = startingDate && endingDate && day >= startingDate && day <= endingDate;
 
                     return (
                         <div
@@ -81,22 +86,26 @@ const EventCalendar = ({ events }: EventCalendarProps) => {
                             className={clsx('border border-gray-800 rounded-md p-2 w-28 h-28 text-center align-top ml-[10px]',
                                 {
                                     'bg-gray-400': isToday(day),
-                                    'bg-blue-800': startingDate && endingDate && day >= startingDate && day <= endingDate,
                                     'text-white': isToday(day),
                                 })}
                             onClick={() => handleDaysClick(day)} >
                             <span>{format(day, 'd')}</span>
-                            {todayEvents.map((event) => (
+                            {(isWithinRange && !isTodayClicked) && (
+                                <div className='bg-blue-500 text-gray-600 mt-4'>New Event</div>
+                            )}
+                            {todayEvent && (
                                 <div
-                                    key={event.title}
-                                    className='bg-blue-500 text-gray-600'>
-                                    {event.title}
+                                    className='bg-blue-500 text-gray-600 mt-4'>
+                                    {todayEvent.title}
                                 </div>
-                            ))}
+                            )}
                         </div>
                     );
                 })}
             </div>
+            {showModal && (
+                <InputModal />
+            )}
         </div >
     );
 };
