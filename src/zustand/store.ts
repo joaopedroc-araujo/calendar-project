@@ -18,7 +18,7 @@ const useStore = create<State>((set) => ({
     dateRange: [new Date(), new Date()],
     addEvent: (newEvent: Event) => set(({ events, ...state }) => ({ ...state, events: [...events, newEvent] })),
     setStartingDate: (date: Date) => set((state) => ({ ...state, startingDate: date })),
-    setEndingDate: (date: Date) => set((state) => ({ ...state, endingDate: date })),
+    setEndingDate: (date) => set({ endingDate: date ? new Date(date.getTime() + (1000 * 60 * 60 * 24)) : undefined }),
 }));
 
 export default useStore;

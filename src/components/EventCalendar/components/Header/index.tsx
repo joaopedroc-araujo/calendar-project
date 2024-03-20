@@ -20,7 +20,7 @@ const Header = () => {
     return (
         <div className='mb-1 flex flex-row items-center justify-center p-2' >
             <button onClick={goToPreviousMonth} className='text-2xl'>
-                <FcPrevious />
+                <FcPrevious color='black' />
             </button>
             <h1 className='text-center text-2xl px-4 font-bold'>{format(currentDate, "MMMM yyyy")}</h1>
             <button onClick={goToNextMonth} className='text-2xl'>

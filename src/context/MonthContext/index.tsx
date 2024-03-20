@@ -17,7 +17,6 @@ export const MonthProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [currentDate, setCurrentDate] = useState(new Date());
 
     const handleMonthChange = (newMonth: Date) => {
-        console.log('monthchange')
         setCurrentDate(newMonth);
     };
 
